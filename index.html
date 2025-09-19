@@ -98,156 +98,207 @@
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
         #ai-response-container ul { list-style-position: inside; padding-left: 0.5rem; }
         #ai-response-container li { margin-bottom: 0.5rem; }
+        
+        .config-error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+        .config-error-box {
+            background-color: #1a1a1a;
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #4a4a4a;
+            max-width: 600px;
+        }
     </style>
 </head>
 <body class="text-white">
+    <div id="app-container">
+        <div class="container mx-auto p-2 sm:p-4 h-full min-h-screen flex flex-col">
+            <header class="text-center mb-6 pt-4 animate-slideInUp" style="animation-delay: 100ms;">
+                <h1 id="greeting" class="text-4xl sm:text-5xl font-bold tracking-wider">Time Manager</h1>
+            </header>
 
-    <div class="container mx-auto p-2 sm:p-4 h-full min-h-screen flex flex-col">
-        <header class="text-center mb-6 pt-4 animate-slideInUp" style="animation-delay: 100ms;">
-            <h1 id="greeting" class="text-4xl sm:text-5xl font-bold tracking-wider">Time Manager</h1>
-        </header>
-
-        <main class="flex-grow flex flex-col md:flex-row gap-6 md:gap-8 md:h-[calc(100vh-120px)]">
-            <!-- Left Panel -->
-            <div class="w-full md:w-1/3 flex flex-col gap-6 md:gap-8 md:h-full md:overflow-y-auto custom-scrollbar md:pr-2 animate-slideInUp" style="animation-delay: 200ms;">
-                <div class="glass p-6 text-center">
-                    <h2 class="text-3xl font-semibold" id="time-display">12:00:00 PM</h2>
-                    <p class="text-lg opacity-80" id="date-display">January 1, 2024</p>
-                </div>
-                
-                <div class="glass p-6">
-                    <h2 class="text-2xl font-bold mb-3">Weekly Goals</h2>
-                    <div class="w-full bg-white/20 rounded-full h-2.5 mb-4">
-                        <div id="goals-progress-bar" class="bg-purple-500 h-2.5 rounded-full transition-all duration-500 btn-primary" style="width: 0%"></div>
+            <main class="flex-grow flex flex-col md:flex-row gap-6 md:gap-8 md:h-[calc(100vh-120px)]">
+                <!-- Left Panel -->
+                <div class="w-full md:w-1/3 flex flex-col gap-6 md:gap-8 md:h-full md:overflow-y-auto custom-scrollbar md:pr-2 animate-slideInUp" style="animation-delay: 200ms;">
+                    <div class="glass p-6 text-center">
+                        <h2 class="text-3xl font-semibold" id="time-display">12:00:00 PM</h2>
+                        <p class="text-lg opacity-80" id="date-display">January 1, 2024</p>
                     </div>
-                    <div id="goals-list" class="flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar pr-1"></div>
-                    <form id="goal-form" class="flex gap-2 mt-3">
-                        <input type="text" id="goal-input" placeholder="Add a new goal..." class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80">
-                        <button type="submit" class="bg-white/20 hover:bg-white/40 p-2 rounded-lg transition-transform hover:scale-105">+</button>
-                    </form>
-                </div>
-
-                <div class="glass p-6 text-center">
-                    <h2 class="text-2xl font-bold mb-3">Udaipur Weather</h2>
-                    <div id="weather-widget" class="flex items-center justify-center gap-4"><p>Loading weather...</p></div>
-                </div>
-                <div class="glass p-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <h2 class="text-2xl font-bold text-center flex-grow">Quote of the Day</h2>
-                        <button id="refresh-quote-btn" class="p-2 rounded-full hover:bg-white/20 transition-transform hover:scale-110">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                        </button>
-                    </div>
-                    <blockquote id="quote-text" class="text-center italic opacity-90 min-h-[60px]">Loading...</blockquote>
-                    <p id="quote-author" class="text-right mt-2 font-medium opacity-70"></p>
-                </div>
-                <div class="glass p-6">
-                    <h2 class="text-2xl font-bold mb-3">✨ AI Insights</h2>
-                    <div class="flex flex-col gap-3">
-                        <button id="ai-focus-btn" class="w-full btn-primary font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
-                            Suggest Today's Focus
-                        </button>
-                        <button id="ai-plan-btn" class="w-full btn-primary font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
-                            Draft Weekly Plan
-                        </button>
-                    </div>
-                    <div id="ai-response-container" class="mt-4 bg-black/20 p-3 rounded-lg min-h-[80px]">
-                        <p class="text-center text-sm opacity-70">Click a button above for AI-powered suggestions.</p>
-                    </div>
-                </div>
-                <div class="glass p-6 text-center">
-                    <h2 class="text-2xl font-bold mb-2">Focus Timer</h2>
-                    <p id="pomodoro-mode" class="text-lg opacity-80 mb-2">Work</p>
-                    <p id="pomodoro-cycles" class="text-sm opacity-60 mb-2">Cycle 1 of 4</p>
-                    <div id="pomodoro-timer" class="text-5xl sm:text-6xl font-bold my-4">25:00</div>
-                    <div class="flex justify-center gap-4">
-                        <button id="pomodoro-start" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg">Start</button>
-                        <button id="pomodoro-pause" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg hidden">Pause</button>
-                        <button id="pomodoro-reset" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg">Reset</button>
-                    </div>
-                </div>
-                <div class="glass p-6 flex-grow">
-                    <h2 class="text-2xl font-bold mb-4">Add a New Task</h2>
-                    <form id="task-form" class="flex flex-col gap-4">
-                        <input type="text" id="task-name" placeholder="Task Name" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80" required>
-                        <input type="text" id="task-category" list="category-suggestions" placeholder="Category (e.g., Work)" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80" required>
-                        <datalist id="category-suggestions"></datalist>
-                        <input type="date" id="task-due-date" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 text-white/70" required>
-                        <select id="task-priority" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 text-white/70">
-                            <option value="low" class="bg-gray-700">Low Priority</option>
-                            <option value="medium" class="bg-gray-700">Medium Priority</option>
-                            <option value="high" class="bg-gray-700">High Priority</option>
-                        </select>
-                        <div class="flex gap-4">
-                             <button type="submit" id="add-task-btn" class="flex-grow btn-primary font-bold py-3 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                <span>Add Task</span>
-                             </button>
-                             <button type="button" id="gemini-subtask-btn" class="btn-primary font-bold py-3 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">✨ Auto-Subtasks</button>
+                    
+                    <div class="glass p-6">
+                        <h2 class="text-2xl font-bold mb-3">Weekly Goals</h2>
+                        <div class="w-full bg-white/20 rounded-full h-2.5 mb-4">
+                            <div id="goals-progress-bar" class="bg-purple-500 h-2.5 rounded-full transition-all duration-500 btn-primary" style="width: 0%"></div>
                         </div>
-                    </form>
-                </div>
-            </div>
-            <!-- Right Panel: Task List -->
-            <div class="w-full md:w-2/3 glass p-4 sm:p-6 flex flex-col md:h-full animate-slideInUp" style="animation-delay: 300ms;">
-                <div class="mb-4">
-                     <h2 class="text-2xl font-bold mb-2">Productivity Snapshot</h2>
-                     <div class="bg-black/10 p-4 rounded-xl" id="productivity-chart-container">
-                        <p class="text-center opacity-70">No task data for the last 7 days.</p>
-                     </div>
-                </div>
-                <div class="flex flex-col flex-grow min-h-0">
-                    <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                        <input type="text" id="task-filter" placeholder="Filter tasks..." class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 transition flex-grow">
-                        <button id="clear-completed-btn" class="btn-danger font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg">Clear Completed</button>
+                        <div id="goals-list" class="flex flex-col gap-2 max-h-32 overflow-y-auto custom-scrollbar pr-1"></div>
+                        <form id="goal-form" class="flex gap-2 mt-3">
+                            <input type="text" id="goal-input" placeholder="Add a new goal..." class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80">
+                            <button type="submit" class="bg-white/20 hover:bg-white/40 p-2 rounded-lg transition-transform hover:scale-105">+</button>
+                        </form>
                     </div>
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-bold flex-shrink-0">Your Tasks</h2>
-                        <div class="bg-black/10 p-2 rounded-lg text-center text-sm">
-                             <p class="font-bold" id="stats-completed-today">0</p>
-                             <p class="opacity-80 text-xs">Done Today</p>
+
+                    <div class="glass p-6 text-center">
+                        <h2 class="text-2xl font-bold mb-3">Udaipur Weather</h2>
+                        <div id="weather-widget" class="flex items-center justify-center gap-4"><p>Loading weather...</p></div>
+                    </div>
+                    <div class="glass p-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="text-2xl font-bold text-center flex-grow">Quote of the Day</h2>
+                            <button id="refresh-quote-btn" class="p-2 rounded-full hover:bg-white/20 transition-transform hover:scale-110">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                            </button>
+                        </div>
+                        <blockquote id="quote-text" class="text-center italic opacity-90 min-h-[60px]">Loading...</blockquote>
+                        <p id="quote-author" class="text-right mt-2 font-medium opacity-70"></p>
+                    </div>
+                    <div class="glass p-6">
+                        <h2 class="text-2xl font-bold mb-3">✨ AI Insights</h2>
+                        <div class="flex flex-col gap-3">
+                            <button id="ai-focus-btn" class="w-full btn-primary font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
+                                Suggest Today's Focus
+                            </button>
+                            <button id="ai-plan-btn" class="w-full btn-primary font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
+                                Draft Weekly Plan
+                            </button>
+                        </div>
+                        <div id="ai-response-container" class="mt-4 bg-black/20 p-3 rounded-lg min-h-[80px]">
+                            <p class="text-center text-sm opacity-70">Click a button above for AI-powered suggestions.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-6 text-center">
+                        <h2 class="text-2xl font-bold mb-2">Focus Timer</h2>
+                        <p id="pomodoro-mode" class="text-lg opacity-80 mb-2">Work</p>
+                        <p id="pomodoro-cycles" class="text-sm opacity-60 mb-2">Cycle 1 of 4</p>
+                        <div id="pomodoro-timer" class="text-5xl sm:text-6xl font-bold my-4">25:00</div>
+                        <div class="flex justify-center gap-4">
+                            <button id="pomodoro-start" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg">Start</button>
+                            <button id="pomodoro-pause" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg hidden">Pause</button>
+                            <button id="pomodoro-reset" class="bg-white/20 hover:bg-white/40 font-bold py-3 px-6 rounded-xl transition-transform hover:scale-105 shadow-lg">Reset</button>
+                        </div>
+                    </div>
+                    <div class="glass p-6 flex-grow">
+                        <h2 class="text-2xl font-bold mb-4">Add a New Task</h2>
+                        <form id="task-form" class="flex flex-col gap-4">
+                            <input type="text" id="task-name" placeholder="Task Name" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80" required>
+                            <input type="text" id="task-category" list="category-suggestions" placeholder="Category (e.g., Work)" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80" required>
+                            <datalist id="category-suggestions"></datalist>
+                            <input type="date" id="task-due-date" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 text-white/70" required>
+                            <select id="task-priority" class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 text-white/70">
+                                <option value="low" class="bg-gray-700">Low Priority</option>
+                                <option value="medium" class="bg-gray-700">Medium Priority</option>
+                                <option value="high" class="bg-gray-700">High Priority</option>
+                            </select>
+                            <div class="flex gap-4">
+                                 <button type="submit" id="add-task-btn" class="flex-grow btn-primary font-bold py-3 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    <span>Add Task</span>
+                                 </button>
+                                 <button type="button" id="gemini-subtask-btn" class="btn-primary font-bold py-3 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg flex justify-center items-center gap-2">✨ Auto-Subtasks</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Right Panel: Task List -->
+                <div class="w-full md:w-2/3 glass p-4 sm:p-6 flex flex-col md:h-full animate-slideInUp" style="animation-delay: 300ms;">
+                    <div class="mb-4">
+                         <h2 class="text-2xl font-bold mb-2">Productivity Snapshot</h2>
+                         <div class="bg-black/10 p-4 rounded-xl" id="productivity-chart-container">
+                            <p class="text-center opacity-70">No task data for the last 7 days.</p>
                          </div>
                     </div>
-                    <div id="task-list" class="custom-scrollbar overflow-y-auto flex-grow pr-2">
-                         <div id="loading-state" class="text-center py-10"><p class="text-xl">Loading tasks...</p></div>
+                    <div class="flex flex-col flex-grow min-h-0">
+                        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                            <input type="text" id="task-filter" placeholder="Filter tasks..." class="w-full bg-transparent border-b-2 border-white/50 p-2 rounded-lg focus:outline-none focus:border-white/80 transition flex-grow">
+                            <button id="clear-completed-btn" class="btn-danger font-bold py-2 px-4 rounded-xl transition-transform hover:scale-105 shadow-lg">Clear Completed</button>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold flex-shrink-0">Your Tasks</h2>
+                            <div class="bg-black/10 p-2 rounded-lg text-center text-sm">
+                                 <p class="font-bold" id="stats-completed-today">0</p>
+                                 <p class="opacity-80 text-xs">Done Today</p>
+                             </div>
+                        </div>
+                        <div id="task-list" class="custom-scrollbar overflow-y-auto flex-grow pr-2">
+                             <div id="loading-state" class="text-center py-10"><p class="text-xl">Loading tasks...</p></div>
+                        </div>
                     </div>
                 </div>
+            </main>
+            <footer class="text-center py-4 mt-auto">
+                <p id="user-id-display" class="text-xs opacity-50">Not signed in</p>
+            </footer>
+        </div>
+        
+        <!-- Chatbot UI -->
+        <button id="chatbot-toggle-btn" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-purple-600 hover:bg-purple-700 rounded-full p-3 sm:p-4 shadow-lg transition-transform hover:scale-110 z-40 animate-glow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
+        </button>
+        <div id="chatbot-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden">
+                <header class="flex items-center justify-between p-4 border-b border-white/20 flex-shrink-0">
+                    <h2 class="text-xl font-bold">Koushoo Assistant</h2>
+                    <button id="chatbot-close-btn" class="p-2 rounded-full hover:bg-white/20 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </header>
+                <div id="chatbot-messages" class="flex-grow p-4 flex flex-col gap-4 overflow-y-auto custom-scrollbar"></div>
+                <form id="chatbot-form" class="p-4 border-t border-white/20 flex-shrink-0 flex items-center gap-4">
+                    <input type="text" id="chatbot-input" placeholder="Ask me anything..." class="w-full bg-transparent border-2 border-white/50 p-3 rounded-xl focus:outline-none focus:border-white/80 transition" autocomplete="off">
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 rounded-xl p-3 shadow-lg transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </form>
             </div>
-        </main>
-        <footer class="text-center py-4 mt-auto">
-            <p id="user-id-display" class="text-xs opacity-50">Not signed in</p>
-        </footer>
-    </div>
-    
-    <!-- Chatbot UI -->
-    <button id="chatbot-toggle-btn" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-purple-600 hover:bg-purple-700 rounded-full p-3 sm:p-4 shadow-lg transition-transform hover:scale-110 z-40 animate-glow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
-    </button>
-    <div id="chatbot-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 hidden">
-        <div class="glass w-full max-w-2xl h-[80vh] flex flex-col rounded-3xl overflow-hidden">
-            <header class="flex items-center justify-between p-4 border-b border-white/20 flex-shrink-0">
-                <h2 class="text-xl font-bold">Koushoo Assistant</h2>
-                <button id="chatbot-close-btn" class="p-2 rounded-full hover:bg-white/20 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </header>
-            <div id="chatbot-messages" class="flex-grow p-4 flex flex-col gap-4 overflow-y-auto custom-scrollbar"></div>
-            <form id="chatbot-form" class="p-4 border-t border-white/20 flex-shrink-0 flex items-center gap-4">
-                <input type="text" id="chatbot-input" placeholder="Ask me anything..." class="w-full bg-transparent border-2 border-white/50 p-3 rounded-xl focus:outline-none focus:border-white/80 transition" autocomplete="off">
-                <button type="submit" class="bg-purple-600 hover:bg-purple-700 rounded-xl p-3 shadow-lg transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
-            </form>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // ===================================================================================
+        // IMPORTANT: FIREBASE CONFIGURATION
+        // ===================================================================================
+        // 1. Create a new Firebase project at https://console.firebase.google.com/
+        // 2. Go to Project Settings -> General tab.
+        // 3. Under "Your apps", click the web icon (</>) to create a new web app.
+        // 4. Copy the firebaseConfig object and paste it here, replacing the placeholder.
+        // ===================================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // ===================================================================================
+        // WARNING: GEMINI API KEY SECURITY
+        // ===================================================================================
+        // Your Gemini API key is visible in this file. This is NOT secure for a public
+        // website. Anyone who inspects your site can see and use your key.
+        // For a real application, you should move API calls to a secure backend server
+        // (like a Cloud Function) to protect your key.
+        // ===================================================================================
+        const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // Replace with your actual Gemini API Key
+        
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+        const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
 
         let app, auth, db, userId, tasksCollectionRef, goalsCollectionRef;
         let isAuthReady = false;
@@ -260,12 +311,23 @@
         const goalsProgressBar = document.getElementById('goals-progress-bar'),goalsList = document.getElementById('goals-list'),goalForm = document.getElementById('goal-form'),goalInput = document.getElementById('goal-input'),productivityChartContainer = document.getElementById('productivity-chart-container');
         const aiFocusBtn = document.getElementById('ai-focus-btn'), aiPlanBtn = document.getElementById('ai-plan-btn'), aiResponseContainer = document.getElementById('ai-response-container');
 
-        const GEMINI_API_KEY = 'AIzaSyBj22v2FUIb1hFwe1hlTGDmJ-IbDeauVVM';
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-        const TTS_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
-
         let chatHistory = [];
         const systemPrompt = "You are a helpful productivity assistant named Koushoo Assistant, created by a developer named Koushoo. You must never mention that you are a Google model, an AI, or Gemini. Your goal is to help the user with their tasks, provide advice on time management, or answer general questions in a friendly, conversational manner.";
+        
+        function showConfigurationError(message) {
+            const errorOverlay = document.createElement('div');
+            errorOverlay.className = 'config-error-overlay';
+            errorOverlay.innerHTML = `
+                <div class="config-error-box">
+                    <h2 class="text-2xl font-bold mb-4 text-red-500">Configuration Error</h2>
+                    <p class="mb-4">${message}</p>
+                    <p class="text-sm opacity-70">Please refer to the comments at the top of the script tag in the HTML file for instructions on how to get your keys.</p>
+                </div>
+            `;
+            document.body.appendChild(errorOverlay);
+            const appContainer = document.getElementById('app-container');
+            if (appContainer) appContainer.style.display = 'none';
+        }
 
         async function callGeminiAPI(url, payload, retries = 3, delay = 1000) { /* Function unchanged */ }
         async function fetchAIGeneratedQuote() { /* Function unchanged */ }
@@ -332,20 +394,121 @@
 
         function renderGoalsAndProgress(goals) { /* Function unchanged */ }
         function renderProductivityChart(tasks) { /* Function unchanged */ }
-        async function initializeFirebase() { /* Function unchanged */ }
+        
+        async function initializeFirebase() {
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                showConfigurationError("Your Firebase configuration is missing or incomplete. Please provide your Firebase project's configuration object in the script.");
+                return;
+            }
+             if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
+                showConfigurationError("Your Gemini API Key is missing. Please provide your Gemini API key in the script to enable AI features.");
+                return;
+            }
+
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        userIdDisplay.textContent = `User ID: ${userId}`;
+                        isAuthReady = true;
+                        attachDataListeners();
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                showConfigurationError(`Firebase initialization failed: ${error.message}`);
+            }
+        }
+
         function getPriorityClass(p){if(p==='high')return'bg-red-500';if(p==='medium')return'bg-yellow-500';return'bg-green-500';}
         function updateCategoryDatalist(){const cats=[...new Set(allTasks.map(t=>t.category).filter(c=>c))];categorySuggestions.innerHTML=cats.map(c=>`<option value="${c}"></option>`).join('');}
         function renderTasksAndStats(tasks){ /* Function unchanged */ }
-        function attachDataListeners(){ /* Function unchanged */ }
+        
+        function attachDataListeners() {
+            if (unsubscribeTasks) unsubscribeTasks();
+            if (unsubscribeGoals) unsubscribeGoals();
+
+            tasksCollectionRef = collection(db, `users/${userId}/tasks`);
+            goalsCollectionRef = collection(db, `users/${userId}/weeklyGoals`);
+
+            unsubscribeTasks = onSnapshot(tasksCollectionRef, (snapshot) => {
+                allTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTasksAndStats(allTasks);
+                renderProductivityChart(allTasks);
+            });
+
+            unsubscribeGoals = onSnapshot(goalsCollectionRef, (snapshot) => {
+                allGoals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderGoalsAndProgress(allGoals);
+            });
+        }
+
         function enterEditMode(el){ /* Function unchanged */ }
         function exitEditMode(el){ /* Function unchanged */ }
 
         taskForm.addEventListener('submit',async e=>{e.preventDefault();if(!isAuthReady){return;}const name=taskNameInput.value.trim();const cat=taskCategoryInput.value.trim();const due=taskDueDateInput.value;const prio=taskPriorityInput.value;if(name&&due&&prio){try{await addDoc(tasksCollectionRef,{name,category:cat,dueDate:due,priority:prio,completed:false,createdAt:serverTimestamp(),completedAt:null});taskForm.reset();}catch(err){console.error("Error adding task:",err);}}});
-        taskList.addEventListener('click',async e=>{ /* Event listener unchanged */ });
+        
+        taskList.addEventListener('click',async e=>{
+            if(!isAuthReady)return;
+            const btn=e.target.closest('button');
+            if(!btn)return;
+            const el=btn.closest('.task-item');
+            const id=btn.dataset.id;
+            const docRef=doc(db,`users/${userId}/tasks`,id); // UPDATED PATH
+            if(btn.classList.contains('delete-btn')){
+                el.classList.add('animate-fadeOutShrink');
+                setTimeout(() => deleteDoc(docRef).catch(err=>console.error("Err deleting:",err)), 400);
+            } else if(btn.classList.contains('toggle-complete-btn')){
+                const isComp=el.classList.contains('completed');
+                updateDoc(docRef,{completed:!isComp,completedAt:!isComp?serverTimestamp():null}).catch(err=>console.error("Err updating:",err));
+            } else if(btn.classList.contains('edit-btn')){
+                enterEditMode(el);
+            } else if(btn.classList.contains('save-btn')){
+                const newName=el.querySelector('.edit-name').value.trim();
+                const newCat=el.querySelector('.edit-category').value.trim();
+                const newDue=el.querySelector('.edit-due-date').value;
+                const newPrio=el.querySelector('.edit-priority').value;
+                if(newName&&newDue&&newPrio){await updateDoc(docRef,{name:newName,category:newCat,dueDate:newDue,priority:newPrio}).catch(err=>console.error("Err updating task:",err));}
+            }
+        });
+
         taskFilterInput.addEventListener('input',e=>{const f=e.target.value.toLowerCase();const filtered=allTasks.filter(t=>t.name.toLowerCase().includes(f)||(t.category&&t.category.toLowerCase().includes(f)));renderTasksAndStats(filtered);});
-        clearCompletedBtn.addEventListener('click',async()=>{ /* Event listener unchanged */ });
-        goalForm.addEventListener('submit', async (e) => { /* Event listener unchanged */ });
-        goalsList.addEventListener('click', async (e) => { /* Event listener unchanged */ });
+        clearCompletedBtn.addEventListener('click',async()=>{if(!isAuthReady)return;const q=query(tasksCollectionRef,where("completed","==",true));const snap=await getDocs(q);snap.forEach(d=>{
+            const el = taskList.querySelector(`[data-task-id="${d.id}"]`);
+            if(el) el.classList.add('animate-fadeOutShrink');
+        });
+        setTimeout(() => snap.forEach(d => deleteDoc(d.ref).catch(err=>console.error("Err clearing:",err))), 400);
+        });
+        
+        goalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = goalInput.value.trim();
+            if (text && isAuthReady) {
+                await addDoc(goalsCollectionRef, { text, completed: false, createdAt: serverTimestamp() });
+                goalInput.value = '';
+            }
+        });
+        
+        goalsList.addEventListener('click', async (e) => {
+            if (!isAuthReady) return;
+            const target = e.target;
+            const id = target.dataset.id;
+            const goalDocRef = doc(db, `users/${userId}/weeklyGoals`, id); // UPDATED PATH
+            if (target.classList.contains('goal-checkbox')) {
+                await updateDoc(goalDocRef, { completed: target.checked });
+            } else if (target.classList.contains('delete-goal-btn')) {
+                const goalEl = target.closest('.goal-item');
+                goalEl.classList.add('animate-fadeOutShrink');
+                setTimeout(() => deleteDoc(goalDocRef), 400);
+            }
+        });
         
         pomodoroStartBtn.addEventListener('click',startTimer);pomodoroPauseBtn.addEventListener('click',pauseTimer);pomodoroResetBtn.addEventListener('click',resetTimer);refreshQuoteBtn.addEventListener('click',fetchAIGeneratedQuote);geminiSubtaskBtn.addEventListener('click',generateSubtasks);
         chatbotToggleBtn.addEventListener('click',()=>chatbotModal.classList.remove('hidden'));chatbotCloseBtn.addEventListener('click',()=>chatbotModal.classList.add('hidden'));chatbotForm.addEventListener('submit',handleSendMessage);addMessageToChat("Hello! I'm Koushoo Assistant. How can I help you be more productive today?",'bot');
